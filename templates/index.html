@@ -1,0 +1,48 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1 class="server-title">Warden Cloud 🛡️</h1>
+    
+    <div class="nav-buttons">
+        {% if user %}
+            <a href="{{ url_for('logout') }}" class="nav-btn primary">تسجيل الخروج</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="nav-btn primary">تسجيل الدخول</a>
+        {% endif %}
+        
+        {% if user %}
+            <a href="{{ url_for('apply') }}" class="nav-btn secondary">التقديم</a>
+        {% else %}
+            <span class="nav-btn secondary" style="opacity: 0.5; cursor: not-allowed;">التقديم</span>
+        {% endif %}
+        
+        <a href="#" class="nav-btn secondary">الرئيسية</a>
+    </div>
+</div>
+
+<div class="main-content">
+    <h2 class="section-title">التقديم لفريق إدارة Warden</h2>
+    <p class="description">
+        انضم إلى فريقنا وساعد في إدارة واحد من أفضل سيرفرات Discord
+    </p>
+    
+    {% if user %}
+        <div class="user-info">
+            <h3>مرحباً، {{ user.username }}!</h3>
+            <p>يمكنك الآن التقديم لفريق الإدارة</p>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="{{ url_for('apply') }}" class="discord-btn">التقديم الآن</a>
+        </div>
+    {% else %}
+        <div class="login-required">
+            <h3>مطلوب تسجيل الدخول</h3>
+            <p>يجب تسجيل الدخول بحساب Discord للتقديم على منصب الإدارة</p>
+            <a href="{{ url_for('login') }}" class="discord-btn">تسجيل الدخول بـ Discord</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1 class="server-title">Warden Cloud 🛡️</h1>
+    <h2 style="color: #f59e0b;">لوحة المالك</h2>
+</div>
+
+<div class="main-content">
+    <h2 class="section-title">تسجيل دخول المالك</h2>
+    
+    <form method="POST">
+        <div class="form-group">
+            <label class="form-label">اسم المستخدم</label>
+            <input type="text" class="form-input" name="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">كلمة المرور</label>
+            <input type="password" class="form-input" name="password" required>
+        </div>
+        
+        <button type="submit" class="submit-btn">دخول</button>
+    </form>
+</div>
+{% endblock %}

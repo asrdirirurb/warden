@@ -1,0 +1,32 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1 class="server-title">Warden Cloud 🛡️</h1>
+    <h2 style="color: #f59e0b;">لوحة المالك</h2>
+</div>
+
+<div class="main-content">
+    <h2 class="section-title">الطلبات المقدمة</h2>
+    
+    {% if applied_users %}
+        <div style="background: rgba(15, 23, 42, 0.5); border-radius: 10px; padding: 20px;">
+            <h3>عدد الطلبات: {{ applied_users|length }}</h3>
+            <ul style="list-style: none; padding: 0;">
+                {% for user_id in applied_users %}
+                    <li style="padding: 10px; margin: 5px 0; background: rgba(30, 41, 59, 0.5); border-radius: 5px;">
+                        Discord ID: {{ user_id }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <p style="text-align: center; color: #64748b;">لا توجد طلبات حتى الآن</p>
+    {% endif %}
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{{ url_for('logout') }}" class="nav-btn secondary">تسجيل الخروج</a>
+    </div>
+</div>
+{% endblock %}

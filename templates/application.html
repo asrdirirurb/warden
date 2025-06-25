@@ -1,0 +1,51 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1 class="server-title">Warden Cloud 🛡️</h1>
+    <div class="nav-buttons">
+        <a href="{{ url_for('index') }}" class="nav-btn secondary">العودة للرئيسية</a>
+        <a href="{{ url_for('logout') }}" class="nav-btn primary">تسجيل الخروج</a>
+    </div>
+</div>
+
+<div class="main-content">
+    <h2 class="section-title">طلب التقديم لفريق الإدارة</h2>
+    
+    <div class="user-info">
+        <h3>معلومات المتقدم</h3>
+        <p><strong>اسم المستخدم:</strong> {{ user.username }}</p>
+        <p><strong>Discord ID:</strong> {{ user.id }}</p>
+    </div>
+    
+    <form method="POST" action="{{ url_for('submit_application') }}">
+        <div class="form-group">
+            <label class="form-label">لماذا تريد الانضمام لفريق الإدارة؟</label>
+            <textarea class="form-input" name="reason" rows="4" required placeholder="اكتب سبب رغبتك في الانضمام..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">كم ساعة يمكنك تقضيها يومياً في السيرفر؟</label>
+            <input type="text" class="form-input" name="hours" required placeholder="مثال: 3-5 ساعات">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">هل لديك خبرة سابقة في إدارة السيرفرات؟</label>
+            <textarea class="form-input" name="experience" rows="3" required placeholder="اذكر خبراتك السابقة..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">كم عمرك؟</label>
+            <input type="number" class="form-input" name="age" required min="13" max="100" placeholder="العمر">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">معلومات إضافية تريد إضافتها</label>
+            <textarea class="form-input" name="additional" rows="3" placeholder="أي معلومات أخرى تريد ذكرها..."></textarea>
+        </div>
+        
+        <button type="submit" class="submit-btn">إرسال الطلب</button>
+    </form>
+</div>
+{% endblock %}
