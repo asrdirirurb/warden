@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warden Server - Staff Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 45px;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .nav-btn.active {
+            background: #00bfff;
+            color: white;
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00bfff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .get-started-btn {
+            background: linear-gradient(45deg, #00bfff, #0080ff);
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 191, 255, 0.3);
+            margin: 20px 10px;
+        }
+
+        .get-started-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 191, 255, 0.4);
+        }
+
+        .get-started-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .discord-btn {
+            background: #5865F2;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .discord-btn:hover {
+            background: #4752C4;
+            box-shadow: 0 15px 40px rgba(88, 101, 242, 0.4);
+        }
+
+        .form-container {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0;
+            text-align: right;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #00bfff;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00bfff;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #00ff88, #00bfff);
+            border: none;
+            padding: 15px 35px;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        .success {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+
+        .error {
+            background: rgba(255, 59, 48, 0.2);
+            border: 1px solid #ff3b30;
+            color: #ff3b30;
+        }
+
+        .warning {
+            background: rgba(255, 149, 0, 0.2);
+            border: 1px solid #ff9500;
+            color: #ff9500;
+        }
+
+        .user-info {
+            background: rgba(0, 191, 255, 0.1);
+            border: 1px solid #00bfff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #00bfff;
+        }
+
+        .admin-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .application-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .application-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .accept-btn {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .reject-btn {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .view-btn {
+            background: #00bfff;
+            color: white;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 16px;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #00bfff;
+        }
+
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 10px 20px;
+            border: 2px solid #00bfff;
+            border-radius: 25px;
+            background: transparent;
+            color: #00bfff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-tab.active {
+            background: #00bfff;
+            color: white;
+        }
+
+        .lang-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .lang-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00bfff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: #00bfff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .lang-btn:hover {
+            background: #00bfff;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+            
+            .nav-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .application-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="showPage('home')">الرئيسية</button>
+            <button class="nav-btn" onclick="showPage('apply')" id="applyNavBtn">التقديم</button>
+            <button class="nav-btn" onclick="showPage('check')" id="checkNavBtn">التحقق</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <h1 class="title">Warden Server</h1>
+            <p class="subtitle">
+                التقديم لفريق إدارة Warden<br>
+                انضم إلى فريقنا وساعد في إدارة واحد من أفضل سيرفرات Discord
+            </p>
+            
+            <div id="homeContent">
+                <button class="get-started-btn" onclick="handleGetStarted()" id="getStartedBtn">
+                    تسجيل الدخول
+                </button>
+                <div id="userInfo" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Apply Page -->
+        <div id="apply" class="page">
+            <h2 class="title" style="font-size: 2.5rem;">مطلوب تسجيل الدخول</h2>
+            <p class="subtitle">يجب تسجيل الدخول بحساب Discord للتقديم على منصب الإدارة</p>
+            
+            <div id="applicationForm" style="display: none;">
+                <div class="form-container">
+                    <form id="staffApplicationForm">
+                        <div class="form-group">
+                            <label>🕒 كم عمرك؟ وهل عندك خبرة سابقة بالإدارة؟</label>
+                            <textarea name="age_experience" required placeholder="اكتب إجابتك هنا..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>🌍 من أي دولة تتكلم؟ وكم تقدر تتواجد يومياً؟</label>
+                            <textarea name="country_availability" required placeholder="اكتب إجابتك هنا..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>🧠 هل عندك معرفة بأنواع الحسابات (NFA / SFA / MCFA)؟ اشرح باختصار.</label>
+                            <textarea name="account_knowledge" required placeholder="اكتب إجابتك هنا..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>🎯 ليش حاب تنضم لفريق إدارة سيرفر Warden؟</label>
+                            <textarea name="motivation" required placeholder="اكتب إجابتك هنا..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>🛠️ لو فتح عضو تذكرة وقال إن الحساب ما يشتغل، كيف تتصرف؟</label>
+                            <textarea name="ticket_handling" required placeholder="اكتب إجابتك هنا..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>💬 هل عندك خبرة في التعامل مع الأعضاء وحل المشاكل؟ اعطِ مثال بسيط لو فيه.</label>
+                            <textarea name="member_experience" required placeholder="اكتب إجابتك هنا..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>⚠️ كيف تتصرف لو شفت عضو يسب أو يخالف القوانين؟</label>
+                            <textarea name="rule_violations" required placeholder="اكتب إجابتك هنا..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>🎧 هل عندك مايك؟ وهل تقدر تدخل مكالمات إذا احتاج الفريق؟</label>
+                            <textarea name="voice_calls" required placeholder="اكتب إجابتك هنا..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>📈 هل تقدر تساعد في نشر السيرفر أو جلب أعضاء؟ وكيف؟</label>
+                            <textarea name="promotion" required placeholder="اكتب إجابتك هنا..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>✍️ أي ملاحظات أو إضافات تحب تقولها؟</label>
+                            <textarea name="additional_notes" placeholder="اكتب إجابتك هنا (اختياري)..."></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">إرسال التقديم</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check Page -->
+        <div id="check" class="page">
+            <h2 class="title" style="font-size: 2.5rem;">التحقق من التقديم</h2>
+            <p class="subtitle">اعرض تقديمك المرسل</p>
+            
+            <div id="applicationStatus"></div>
+        </div>
+    </div>
+
+    <!-- Admin Panel (Hidden) -->
+    <div id="ownershipPanel" style="display: none;">
+        <div class="container">
+            <h2 class="title" style="font-size: 2.5rem;">لوحة الإدارة</h2>
+            
+            <div id="adminLogin">
+                <div class="login-form">
+                    <input type="text" id="adminUsername" class="login-input" placeholder="اسم المستخدم">
+                    <input type="password" id="adminPassword" class="login-input" placeholder="كلمة المرور">
+                    <button onclick="adminLogin()" class="get-started-btn">تسجيل الدخول</button>
+                </div>
+            </div>
+
+            <div id="adminDashboard" style="display: none;">
+                <div class="category-tabs">
+                    <button class="category-tab active" onclick="showApplications('pending')">معلقة</button>
+                    <button class="category-tab" onclick="showApplications('accepted')">مقبولة</button>
+                    <button class="category-tab" onclick="showApplications('rejected')">مرفوضة</button>
+                </div>
+
+                <div id="applicationsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Toggle -->
+    <div class="lang-toggle">
+        <button class="lang-btn" onclick="toggleLanguage()">عر</button>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let currentLanguage = 'ar';
+        let applications = JSON.parse(localStorage.getItem('applications') || '[]');
+        let userApplications = JSON.parse(localStorage.getItem('userApplications') || '{}');
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            if (window.location.pathname.includes('/ownership')) {
+                document.body.innerHTML = document.getElementById('ownershipPanel').innerHTML;
+            }
+        });
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (pageId === 'apply') {
+                checkApplyAccess();
+            } else if (pageId === 'check') {
+                loadUserApplication();
+            }
+        }
+
+        // Discord OAuth simulation
+        function handleGetStarted() {
+            if (!currentUser) {
+                // Simulate Discord OAuth
+                const clientId = '1383684880214528112'; // Replace with your actual bot client ID
+                const redirectUri = encodeURIComponent(window.location.origin);
+                const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify`;
+                
+                // For demo purposes, simulate successful auth
+                simulateDiscordAuth();
+            } else {
+                showApplicationForm();
+            }
+        }
+
+        function simulateDiscordAuth() {
+            // Simulate Discord user data
+            currentUser = {
+                id: '123456789012345678',
+                username: 'TestUser#1234',
+                avatar: 'https://cdn.discordapp.com/embed/avatars/0.png',
+                discriminator: '1234'
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            updateUIAfterAuth();
+        }
+
+        function checkAuthStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUIAfterAuth();
+            }
+        }
+
+        function updateUIAfterAuth() {
+            if (currentUser) {
+                document.getElementById('getStartedBtn').textContent = 'ابدأ التقديم';
+                document.getElementById('getStartedBtn').onclick = showApplicationForm;
+                
+                // Enable navigation buttons
+                document.getElementById('applyNavBtn').style.opacity = '1';
+                document.getElementById('applyNavBtn').style.pointerEvents = 'auto';
+                document.getElementById('checkNavBtn').style.opacity = '1';
+                document.getElementById('checkNavBtn').style.pointerEvents = 'auto';
+
+                // Show user info
+                const userInfo = document.getElementById('userInfo');
+                userInfo.innerHTML = `
+                    <div class="user-info">
+                        <img src="${currentUser.avatar}" alt="Avatar" class="user-avatar">
+                        <div>
+                            <strong>${currentUser.username}</strong><br>
+                            <small>مرحباً! يمكنك الآن التقديم لفريق الإدارة</small>
+                        </div>
+                    </div>
+                `;
+                userInfo.style.display = 'block';
+            }
+        }
+
+        function showApplicationForm() {
+            showPage('apply');
+            checkApplyAccess();
+        }
+
+        function checkApplyAccess() {
+            const applyPage = document.getElementById('apply');
+            
+            if (!currentUser) {
+                applyPage.innerHTML = `
+                    <h2 class="title" style="font-size: 2.5rem;">مطلوب تسجيل الدخول</h2>
+                    <p class="subtitle">يجب تسجيل الدخول بحساب Discord للتقديم على منصب الإدارة</p>
+                    <button class="get-started-btn discord-btn" onclick="handleGetStarted()">
+                        🔗 تسجيل الدخول بـ Discord
+                    </button>
+                `;
+                return;
+            }
+
+            // Check if user already applied
+            if (userApplications[currentUser.id]) {
+                applyPage.innerHTML = `
+                    <h2 class="title" style="font-size: 2.5rem;">تم التقديم مسبقاً</h2>
+                    <p class="subtitle">لقد قمت بتقديم طلب مسبقاً. يمكنك مراجعة تقديمك في صفحة التحقق.</p>
+                    <div class="status-message warning">
+                        ⚠️ لا يمكن التقديم أكثر من مرة واحدة
+                    </div>
+                    <button class="get-started-btn" onclick="showPage('check')">مراجعة التقديم</button>
+                `;
+                return;
+            }
+
+            // Show application form
+            document.getElementById('applicationForm').style.display = 'block';
+        }
+
+        // Handle form submission
+        document.getElementById('staffApplicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                alert('يجب تسجيل الدخول أولاً');
+                return;
+            }
+
+            const formData = new FormData(e.target);
+            const applicationData = {
+                id: Date.now(),
+                userId: currentUser.id,
+                username: currentUser.username,
+                avatar: currentUser.avatar,
+                timestamp: new Date().toISOString(),
+                status: 'pending',
+                answers: {}
+            };
+
+            // Collect all answers
+            for (let [key, value] of formData.entries()) {
+                applicationData.answers[key] = value;
+            }
+
+            // Save application
+            applications.push(applicationData);
+            userApplications[currentUser.id] = applicationData;
+            
+            localStorage.setItem('applications', JSON.stringify(applications));
+            localStorage.setItem('userApplications', JSON.stringify(userApplications));
+
+            // Show success message
+            document.getElementById('apply').innerHTML = `
+                <h2 class="title" style="font-size: 2.5rem;">تم إرسال التقديم!</h2>
+                <div class="status-message success">
+                    ✅ تم إرسال تقديمك بنجاح! سيتم النظر فيه قريباً.
+                </div>
+                <p class="subtitle">يمكنك مراجعة تقديمك في أي وقت من صفحة التحقق</p>
+                <button class="get-started-btn" onclick="showPage('check')">مراجعة التقديم</button>
+            `;
+        });
+
+        function loadUserApplication() {
+            const checkPage = document.getElementById('check');
+            
+            if (!currentUser) {
+                checkPage.innerHTML = `
+                    <h2 class="title" style="font-size: 2.5rem;">مطلوب تسجيل الدخول</h2>
+                    <p class="subtitle">يجب تسجيل الدخول لمراجعة تقديمك</p>
+                    <button class="get-started-btn discord-btn" onclick="handleGetStarted()">
+                        🔗 تسجيل الدخول بـ Discord
+                    </button>
+                `;
+                return;
+            }
+
+            const userApp = userApplications[currentUser.id];
+            
+            if (!userApp) {
+                checkPage.innerHTML = `
+                    <h2 class="title" style="font-size: 2.5rem;">لا يوجد تقديم</h2>
+                    <p class="subtitle">لم تقم بتقديم طلب بعد</p>
+                    <button class="get-started-btn" onclick="showPage('apply')">ابدأ التقديم</button>
+                `;
+                return;
+            }
+
+            const statusColors = {
+                pending: 'warning',
+                accepted: 'success',
+                rejected: 'error'
+            };
+
+            const statusText = {
+                pending: 'قيد المراجعة',
+                accepted: 'مقبول',
+                rejected: 'مرفوض'
+            };
+
+            let answersHtml = '';
+            const questions = [
+                '🕒 كم عمرك؟ وهل عندك خبرة سابقة بالإدارة؟',
+                '🌍 من أي دولة تتكلم؟ وكم تقدر تتواجد يومياً؟',
+                '🧠 هل عندك معرفة بأنواع الحسابات (NFA / SFA / MCFA)؟ اشرح باختصار.',
+                '🎯 ليش حاب تنضم لفريق إدارة سيرفر Warden؟',
+                '🛠️ لو فتح عضو تذكرة وقال إن الحساب ما يشتغل، كيف تتصرف؟',
+                '💬 هل عندك خبرة في التعامل مع الأعضاء وحل المشاكل؟ اعطِ مثال بسيط لو فيه.',
+                '⚠️ كيف تتصرف لو شفت عضو يسب أو يخالف القوانين؟',
+                '🎧 هل عندك مايك؟ وهل تقدر تدخل مكالمات إذا احتاج الفريق؟',
+                '📈 هل تقدر تساعد في نشر السيرفر أو جلب أعضاء؟ وكيف؟',
+                '✍️ أي ملاحظات أو إضافات تحب تقولها؟'
+            ];
+
+            const answerKeys = [
+                'age_experience', 'country_availability', 'account_knowledge',
+                'motivation', 'ticket_handling', 'member_experience',
+                'rule_violations', 'voice_calls', 'promotion', 'additional_notes'
+            ];
+
+            questions.forEach((question, index) => {
+                const answer = userApp.answers[answerKeys[index]] || 'لم يتم الإجابة';
+                answersHtml += `
+                    <div class="form-group">
+                        <label>${question}</label>
+                        <textarea readonly style="background: rgba(0,0,0,0.2); cursor: default;">${answer}</textarea>
+                    </div>
+                `;
+            });
+
+            checkPage.innerHTML = `
+                <div id="applicationStatus">
+                    <div class="status-message ${statusColors[userApp.status]}">
+                        الحالة: ${statusText[userApp.status]}
+                    </div>
+                    <div class="form-container">
+                        ${answersHtml}
+                        <div style="text-align: center; margin-top: 20px; opacity: 0.7;">
+                            تاريخ التقديم: ${new Date(userApp.timestamp).toLocaleDateString('ar-SA')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Admin functions
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (username === 'warden-os' && password === 'warden-shallnotpass@') {
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                showApplications('pending');
+            } else {
+                alert('بيانات الدخول غير صحيحة');
+            }
+        }
+
+        function show
